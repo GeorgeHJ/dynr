@@ -1,0 +1,87 @@
+#! /bin/sh
+# A script to tag flac files with dynamic range
+# Uses metaflac and dr14_tmeter
+
+spinner() {
+	printf "%s" "$1"
+	while true
+	do
+		printf "%s\b" "-"
+		sleep 0.1
+		printf "%s\b" \\
+		sleep 0.1
+		printf "%s\b" "|"
+		sleep 0.1
+		printf "%s\b" "/"
+		sleep 0.1
+	done
+}
+
+check_DR_txt() {
+	#Check for dr14.txt report and run one if needed
+	if
+		[ ! -e dr14.txt ]
+	then
+		spinner "Running a DR report! " &
+		spinner_pid=$!
+		dr14_tmeter -d >/dev/null 2>&1
+		# kill -9 "$spinner_pid"
+		{ kill $spinner_pid && wait $spinner_pid; } 2>/dev/null
+		printf "\r%s%s\n" "$(tput el)" "Report complete!"
+	fi
+}
+
+tag_TrackDR() {
+	# find the files in the DR report and tag them
+	spinner "Tagging these tracks! " &
+	spinner_pid=$!
+	for file in *.flac; do
+		# Get the track number
+		trackno=$(metaflac --show-tag=TRACKNUMBER "$file" | sed -e 's/TRACKNUMBER=//')
+		# If the track number is 1 digit, prepend a zero
+		if [ "$trackno" -lt 10 ]; then
+			trackno="0$trackno"
+		fi
+		# Get the track name
+		trackname=$(metaflac --show-tag=TITLE "$file" | sed -e 's/TITLE=//')
+		# Look up the track on the DR report and get the DR number
+		trackdr=$(grep "$trackno"' - '"$trackname" dr14.txt | awk '{ print substr($1,3) }')
+		metaflac --remove-tag="DYNAMIC RANGE" "$file"
+		metaflac --set-tag="DYNAMIC RANGE=$trackdr" "$file"
+	done
+	{ kill $spinner_pid && wait $spinner_pid; } 2>/dev/null
+	# kill -9 $spinner_pid
+	printf "\r%s%s\n" "$(tput el)" "Tagged tracks with DR values!"
+}
+
+tag_AlbumDR() {
+	# tag all files with the value for the album
+	spinner "Tagging all files with the Album DR!" &
+	spinner_pid=$!
+	albumdr=$(awk '/Official DR value/{print substr($4,3)}' dr14.txt)
+	for file in *.flac; do
+		metaflac --remove-tag="ALBUM DYNAMIC RANGE" "$file"
+		metaflac --set-tag="ALBUM DYNAMIC RANGE=$albumdr" "$file"
+	done
+	{ kill $spinner_pid && wait $spinner_pid; } 2>/dev/null
+	# kill -9 $spinner_pid
+	printf "\r%s%s\n" "$(tput el)" "Tagged tracks with album DR!"
+}
+
+tag_RG() {
+	spinner "Tagging all files with Replay Gain values! " &
+	spinner_pid=$!
+	metaflac --add-replay-gain ./*.flac
+	# kill -9 $spinner_pid
+	{ kill $spinner_pid && wait $spinner_pid; } 2>/dev/null
+	printf "\r%s%s\n" "$(tput el)" "Tagged tracks with Replay Gain values!"
+}
+
+main() {
+	check_DR_txt
+	tag_TrackDR
+	tag_AlbumDR
+	tag_RG
+}
+
+main
