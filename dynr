@@ -34,7 +34,7 @@ spinner() {
 check_DR_txt() {
 	#Check for dr14.txt report and run one if needed
 	if
-		[ ! -e "$path/"dr14.txt ]
+		[ ! -e "$path"/dr14.txt ]
 	then
 		spinner "Running a DR report! " &
 		spinner_pid=$!
@@ -59,7 +59,7 @@ tag_TrackDR() {
 		# Get the track name
 		trackname=$(metaflac --show-tag=TITLE "$file" | sed -e 's/TITLE=//')
 		# Look up the track on the DR report and get the DR number
-		trackdr=$(grep "$trackno"' - '"$trackname" "$path/"dr14.txt | awk '{ print substr($1,3) }')
+		trackdr=$(grep "$trackno"' - '"$trackname" "$path"/dr14.txt | awk '{ print substr($1,3) }')
 		metaflac --remove-tag="DYNAMIC RANGE" "$file"
 		metaflac --set-tag="DYNAMIC RANGE=$trackdr" "$file"
 	done
