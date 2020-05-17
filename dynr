@@ -72,7 +72,7 @@ tag_AlbumDR() {
 	# tag all files with the value for the album
 	spinner "Tagging all files with the Album DR!" &
 	spinner_pid=$!
-	albumdr=$(awk '/Official DR value/{print substr($4,3)}' "$path/"dr14.txt)
+	albumdr=$(awk '/Official DR value/{print substr($4,3)}' "$path"/dr14.txt)
 	for file in "$path"/*.flac; do
 		metaflac --remove-tag="ALBUM DYNAMIC RANGE" "$file"
 		metaflac --set-tag="ALBUM DYNAMIC RANGE=$albumdr" "$file"
