@@ -2,6 +2,13 @@
 # A script to tag flac files with dynamic range
 # Uses metaflac and dr14_tmeter
 
+main() {
+	check_DR_txt
+	tag_TrackDR
+	tag_AlbumDR
+	tag_RG
+}
+
 spinner() {
 	printf "%s" "$1"
 	while true
@@ -75,13 +82,6 @@ tag_RG() {
 	# kill -9 $spinner_pid
 	{ kill $spinner_pid && wait $spinner_pid; } 2>/dev/null
 	printf "\r%s%s\n" "$(tput el)" "Tagged tracks with Replay Gain values!"
-}
-
-main() {
-	check_DR_txt
-	tag_TrackDR
-	tag_AlbumDR
-	tag_RG
 }
 
 main
