@@ -39,7 +39,6 @@ check_DR_txt() {
 		spinner "Running a DR report! " &
 		spinner_pid=$!
 		dr14_tmeter -d "$path" >/dev/null 2>&1
-		# kill -9 "$spinner_pid"
 		{ kill $spinner_pid && wait $spinner_pid; } 2>/dev/null
 		printf "\r%s%s\n" "$(tput el)" "Report complete!"
 	fi
@@ -64,7 +63,6 @@ tag_TrackDR() {
 		metaflac --set-tag="DYNAMIC RANGE=$trackdr" "$file"
 	done
 	{ kill $spinner_pid && wait $spinner_pid; } 2>/dev/null
-	# kill -9 $spinner_pid
 	printf "\r%s%s\n" "$(tput el)" "Tagged tracks with DR values!"
 }
 
@@ -78,7 +76,6 @@ tag_AlbumDR() {
 		metaflac --set-tag="ALBUM DYNAMIC RANGE=$albumdr" "$file"
 	done
 	{ kill $spinner_pid && wait $spinner_pid; } 2>/dev/null
-	# kill -9 $spinner_pid
 	printf "\r%s%s\n" "$(tput el)" "Tagged tracks with album DR!"
 }
 
@@ -86,7 +83,6 @@ tag_RG() {
 	spinner "Tagging all files with Replay Gain values! " &
 	spinner_pid=$!
 	metaflac --add-replay-gain "$path"/*.flac
-	# kill -9 $spinner_pid
 	{ kill $spinner_pid && wait $spinner_pid; } 2>/dev/null
 	printf "\r%s%s\n" "$(tput el)" "Tagged tracks with Replay Gain values!"
 }
