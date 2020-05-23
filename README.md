@@ -12,6 +12,9 @@ Currently only `*.flac` is supported
 * `metaflac`
 * GNU `sleep`
 
+### Optional dependencies
+* `beets` — for updating the beets database
+
 ## Code style
 Uses POSIX shell, verified by `shellcheck`. Most of the heavy lifing is done by the programs, so there's no need for bashisms.
 
@@ -37,4 +40,4 @@ No `echo`!
 ## To do
 * [ ] Refactoring
 * [ ] Use `loudgain`
-* [ ] Beets integration for optional `beet update`
+* [x] Beets integration for optional `beet update`
