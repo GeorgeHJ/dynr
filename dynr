@@ -42,9 +42,8 @@ sanity_check() {
 	.wav
 	.wma
 	.wv"
-	for type in $ftypes
-	do
-	[ -n "$(find "$path" -name "*$type")" ] && typecount=$((typecount + 1))
+	for type in $ftypes; do
+		[ -n "$(find "$path" -name "*$type")" ] && typecount=$((typecount + 1))
 	done
 	if [ "$typecount" -gt 1 ]; then
 		printf "Multiple (%s) audio filetypes found.\n" "$typecount"
@@ -57,6 +56,7 @@ main() {
 	tag_TrackDR
 	tag_AlbumDR
 	tag_RG
+	update_beets
 }
 
 spinner() {
@@ -127,6 +127,28 @@ tag_RG() {
 	metaflac --add-replay-gain "$path"/*.flac
 	{ kill $spinner_pid && wait $spinner_pid; } 2>/dev/null
 	printf "\r%s%s\n" "$(tput el)" "Tagged tracks with Replay Gain values!"
+}
+
+update_beets() {
+	# Check that beets is installed and a library database exists
+	# Then give the option to update it
+	if command -v beet >/dev/null 2>&1 &&
+		[ -f "$XDG_CONFIG_HOME/.config/beets/library.db" ] ||
+		[ -f "$XDG_CONFIG_HOME/beets/library.db" ]; then
+		printf "Beets detected, update DB? (y/n)\n"
+		while true; do
+			read -r answer
+			case $answer in
+			[Yy]*) printf "%s\n" "Updating database!";
+				beet update; return 0 ;;
+			[Nn]*) printf "%s\n" "No update."; return 0 ;;
+			*) echo "Please answer yes or no." ;;
+			esac
+		done
+	else
+		printf "Beets not found.\n"
+		return 1
+	fi
 }
 
 if checkdeps && sanity_check; then
