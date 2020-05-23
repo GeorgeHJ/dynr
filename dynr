@@ -27,6 +27,31 @@ checkdeps() {
 	fi
 }
 
+sanity_check() {
+	# Check the album directory to make sure that there isn't a mess of different formats
+	typecount=0
+	ftypes="
+	.aac
+	.aiff
+	.ape
+	.flac
+	.mp3
+	.mp4a
+	.ogg
+	.opus
+	.wav
+	.wma
+	.wv"
+	for type in $ftypes
+	do
+	[ -n "$(find "$path" -name "*$type")" ] && typecount=$((typecount + 1))
+	done
+	if [ "$typecount" -gt 1 ]; then
+		printf "Multiple (%s) audio filetypes found.\n" "$typecount"
+		return 1
+	fi
+}
+
 main() {
 	check_DR_txt
 	tag_TrackDR
@@ -108,7 +133,7 @@ tag_RG() {
 	printf "\r%s%s\n" "$(tput el)" "Tagged tracks with Replay Gain values!"
 }
 
-if checkdeps; then
+if checkdeps && sanity_check; then
 	main
 else
 	exit 1
