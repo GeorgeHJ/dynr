@@ -5,10 +5,53 @@
 if [ -z "$1" ]; then
 	path=$PWD
 elif [ -d "$1" ]; then
-	path=$1	
+	path=$1
 else
 	exit 1
 fi
+
+checkdeps() {
+	# Make sure that mandatory dependencies are met
+	if command -v dr14_tmeter >/dev/null; then
+		true
+	else
+		printf "%s is not installed.\n" "dr14_tmeter"
+		return 1
+	fi
+
+	if command -v metaflac >/dev/null; then
+		true
+	else
+		printf "%s is not installed.\n" "metaflac"
+		return 1
+	fi
+}
+
+sanity_check() {
+	# Check the album directory to make sure that there isn't a mess of different formats
+	typecount=0
+	ftypes="
+	.aac
+	.aiff
+	.ape
+	.flac
+	.mp3
+	.mp4a
+	.ogg
+	.opus
+	.wav
+	.wma
+	.wv"
+	for type in $ftypes
+	do
+	[ -n "$(find "$path" -name "*$type")" ] && typecount=$((typecount + 1))
+	done
+	if [ "$typecount" -gt 1 ]; then
+		printf "Multiple (%s) audio filetypes found.\n" "$typecount"
+		return 1
+	fi
+}
+
 main() {
 	check_DR_txt
 	tag_TrackDR
@@ -18,8 +61,7 @@ main() {
 
 spinner() {
 	printf "%s" "$1"
-	while true
-	do
+	while true; do
 		printf "%s\b" "-"
 		sleep 0.1
 		printf "%s\b" \\
@@ -87,4 +129,8 @@ tag_RG() {
 	printf "\r%s%s\n" "$(tput el)" "Tagged tracks with Replay Gain values!"
 }
 
-main
+if checkdeps && sanity_check; then
+	main
+else
+	exit 1
+fi
