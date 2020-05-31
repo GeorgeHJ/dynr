@@ -25,6 +25,13 @@ checkdeps() {
 		printf "%s is not installed.\n" "metaflac"
 		return 1
 	fi
+
+	if command -v loudgain >/dev/null; then
+		true
+	else
+		printf "%s is not installed.\n" "loudgain"
+		return 1
+	fi
 }
 
 sanity_check() {
