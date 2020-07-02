@@ -13,21 +13,21 @@ fi
 checkdeps() {
 	# Make sure that mandatory dependencies are met
 	if command -v dr14_tmeter >/dev/null; then
-		true
+		return 0
 	else
 		printf "%s is not installed.\n" "dr14_tmeter"
 		return 1
 	fi
 
 	if command -v metaflac >/dev/null; then
-		true
+		return 0
 	else
 		printf "%s is not installed.\n" "metaflac"
 		return 1
 	fi
 
 	if command -v loudgain >/dev/null; then
-		true
+		return 0
 	else
 		printf "%s is not installed.\n" "loudgain"
 		return 1
