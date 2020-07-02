@@ -131,7 +131,7 @@ tag_AlbumDR() {
 tag_RG() {
 	spinner "Tagging all files with Replay Gain values! " &
 	spinner_pid=$!
-	metaflac --add-replay-gain "$dir_album"/*.flac
+	$ loudgain -a -k -s e "$dir_album"/*.flac
 	{ kill $spinner_pid && wait $spinner_pid; } 2>/dev/null
 	printf "\r%s%s\n" "$(tput el)" "Tagged tracks with Replay Gain values!"
 }
