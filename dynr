@@ -85,7 +85,7 @@ check_DR_txt() {
 	if
 		[ ! -e "$dir_album"/dr14.txt ]
 	then
-		spinner "Running a DR report! " &
+		spinner "Running a DR report! " >&2 &
 		spinner_pid=$!
 		dr14_tmeter -d "$dir_album" >/dev/null 2>&1
 		{ kill $spinner_pid && wait $spinner_pid; } 2>/dev/null
@@ -95,7 +95,7 @@ check_DR_txt() {
 
 tag_TrackDR() {
 	# find the files in the DR report and tag them
-	spinner "Tagging these tracks! " &
+	spinner "Tagging these tracks! " >&2 &
 	spinner_pid=$!
 	for file in "$dir_album"/*.flac; do
 		# Get the track number
@@ -117,7 +117,7 @@ tag_TrackDR() {
 
 tag_AlbumDR() {
 	# tag all files with the value for the album
-	spinner "Tagging all files with the Album DR!" &
+	spinner "Tagging all files with the Album DR!" >&2 &
 	spinner_pid=$!
 	albumdr=$(awk '/Official DR value/{print substr($4,3)}' "$dir_album"/dr14.txt)
 	for file in "$dir_album"/*.flac; do
@@ -129,7 +129,7 @@ tag_AlbumDR() {
 }
 
 tag_RG() {
-	spinner "Tagging all files with Replay Gain values! " &
+	spinner "Tagging all files with Replay Gain values! " >&2 &
 	spinner_pid=$!
 	loudgain --quiet -a -k -s e "$dir_album"/*.flac >/dev/null 2>&1
 	{ kill $spinner_pid && wait $spinner_pid; } 2>/dev/null
