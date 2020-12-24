@@ -142,18 +142,18 @@ update_beets() {
 	if command -v beet >/dev/null 2>&1 &&
 		[ -f "$XDG_CONFIG_HOME/.config/beets/library.db" ] ||
 		[ -f "$XDG_CONFIG_HOME/beets/library.db" ]; then
-		printf "Beets detected, update DB? (y/n)\n"
+		printf "Beets detected, update DB? (y/n)\n" >&2
 		while true; do
 			read -r answer
 			case $answer in
-			[Yy]*) printf "%s\n" "Updating database!";
+			[Yy]*) printf "%s\n" "Updating database!" >&2;
 				beet update; return 0 ;;
-			[Nn]*) printf "%s\n" "No update."; return 0 ;;
+			[Nn]*) printf "%s\n" "No update." >&2; return 0 ;;
 			*) echo "Please answer yes or no." ;;
 			esac
 		done
 	else
-		printf "Beets not found.\n"
+		printf "Beets not found.\n" >&2
 		return 1
 	fi
 }
