@@ -53,7 +53,10 @@ sanity_check() {
 		[ -n "$(find "$dir_album" -name "*$type")" ] && typecount=$((typecount + 1))
 	done
 	if [ "$typecount" -gt 1 ]; then
-		printf "Multiple (%s) audio filetypes found.\n" "$typecount"
+		printf "Multiple (%s) audio filetypes found.\n" "$typecount" >&2
+		return 1
+	elif [ "$typecount" -lt 1 ]; then
+		printf "%s audio filetypes found.\n" "$typecount" >&2
 		return 1
 	fi
 }
